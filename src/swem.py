@@ -205,12 +205,19 @@ def pad(X, shape):
 
     X = np.array(X)
 
+    if (X.ndim < 2) or (X.shape[0] == 0):
+        print('Warning: Empty sentence encountered')
+        X = np.zeros((1, shape[1]))
+
     if X.shape[0] > shape[0]:
         print('Warning: Max sentence length exceeded')
         X = X[:shape[0], :]
 
     Z = np.zeros(shape)
     X_mask = np.zeros(shape)
+
+    # print(Z.shape, X.shape)
+
     Z[:X.shape[0], :X.shape[1]] = X
     X_mask[:X.shape[0], :X.shape[1]] = 1.
 
