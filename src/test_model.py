@@ -29,22 +29,22 @@ def mturk_test():
     X = np.load('../data/mturk_embedded.npz')
 
     # X0 = X['arr_0']
-    X1 = X['arr_1']
-    # X2 = X['arr_2']
+    # X1 = X['arr_1']
+    X2 = X['arr_2']
     # X3 = X['arr_3']
 
     m = SWEM(
         embedding_dimension=embedding_dim,
-        num_outputs=1,
+        num_outputs=2,
         learning_rate=1e-4,
         activation_fn=tf.nn.elu,
         embedding_mlp_depth=2,
-        prediction_mlp_depth=1)
+        prediction_mlp_layers=(120, 24))
 
     # m.train(X0, Y, plotfile='../img/X0_training.png')
-    m.train(X1, Y[:, 0], plotfile='../img/X1_Y0_training.png',
-            batch_size=400,
-            epochs=10)  # m.train(X2, Y, plotfile='../img/X2_training.png')
+    m.train(X2, Y[:, :2], plotfile='../img/X2_Y01_training.png',
+            batch_size=100,
+            epochs=20)  # m.train(X2, Y, plotfile='../img/X2_training.png')
     # m.train(X3, Y, plotfile='../img/X3_training.png',
     #         batch_size=500,
     #         epochs=10)

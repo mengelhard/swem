@@ -10,14 +10,14 @@ from vis_data import TrainingSummary
 class SWEM:
 
     def __init__(self, embedding_dimension=300, num_outputs=1,
-                 embedding_mlp_depth=3, prediction_mlp_depth=3,
+                 embedding_mlp_depth=3, prediction_mlp_layers=(300, 300, 300),
                  classifier=False, alpha=0., learning_rate=1e-4,
                  max_sentence_length=200, activation_fn=tf.nn.relu):
 
         self.embedding_dimension = embedding_dimension
         self.num_outputs = num_outputs
         self.embedding_mlp_depth = embedding_mlp_depth
-        self.prediction_mlp_depth = prediction_mlp_depth
+        self.prediction_mlp_layers = prediction_mlp_layers
         self.classifier = classifier
         self.alpha = alpha
         self.learning_rate = learning_rate
@@ -134,15 +134,23 @@ class SWEM:
 
         x = tf.concat([x_avg, x_max], 1)
 
-        for i in range(self.prediction_mlp_depth):
+        for layer in self.prediction_mlp_layers:
 
             x = tf.contrib.layers.fully_connected(
-                x, 2 * self.embedding_dimension,
+                x, layer,
                 activation_fn=self.activation_fn)
 
-        self._output_tensor = tf.contrib.layers.fully_connected(
-            x, self.num_outputs,
-            activation_fn=self.activation_fn)
+        if self.classifier:
+
+            self._output_tensor = tf.contrib.layers.fully_connected(
+                x, self.num_outputs,
+                activation_fn=self.activation_fn)
+
+        else:
+
+            self._output_tensor = tf.contrib.layers.fully_connected(
+                x, self.num_outputs,
+                activation_fn=None)
 
     def _get_train_step(self):
 
